@@ -1,5 +1,5 @@
 def mostrar_menu():
-    print("\nGestor de Tareas")
+    print("\nGestor de Tareas 1.0.0")
     print("1. Agregar tarea")
     print("2. Ver tareas")
     print("3. Eliminar tarea")
