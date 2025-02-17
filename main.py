@@ -8,7 +8,7 @@ def cargar_tareas():
             tareas_cargadas = json.load(file)
             print("Tareas cargadas desde archivo:", tareas_cargadas)  
             return tareas_cargadas
-    except (FileNotFoundError, json.JSONDecodeError):
+    except FileNotFoundError:
         print("No se encontró el archivo o el archivo está vacío.") 
         return []  
 
