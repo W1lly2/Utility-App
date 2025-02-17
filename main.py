@@ -1,83 +1,103 @@
+import tkinter as tk
+from tkinter import messagebox
 import json
 
 TAREAS_FILE = "tareas.json"
 
+# Cargar tareas desde el archivo JSON
 def cargar_tareas():
     try:
         with open(TAREAS_FILE, "r") as file:
             tareas_cargadas = json.load(file)
-            print("Tareas cargadas desde archivo:", tareas_cargadas)  
             return tareas_cargadas
-    except FileNotFoundError:
-        print("No se encontró el archivo o el archivo está vacío.") 
-        return []  
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []  # Si no se encuentra el archivo o está vacío, devolvemos una lista vacía
 
+# Guardar tareas en el archivo JSON
 def guardar_tareas(tareas):
     try:
         with open(TAREAS_FILE, "w") as file:
-            json.dump(tareas, file, indent=4)  
-            print(f"Tareas guardadas: {tareas}")  
+            json.dump(tareas, file, indent=4)
     except Exception as e:
-        print(f"Error al guardar el archivo: {e}")  
+        messagebox.showerror("Error", f"No se pudo guardar el archivo: {e}")
 
-tareas = cargar_tareas()
-
-def mostrar_menu():
-    print("\nGestor de Tareas 1.0.0")
-    print("1. Agregar tarea")
-    print("2. Ver tareas")
-    print("3. Eliminar tarea")
-    print("4. Salir")
-
+# Función para agregar tarea
 def agregar_tarea():
-    tarea = input("Ingresa la tarea: ").strip()
+    tarea = entry_tarea.get().strip()
     if tarea:
         tareas.append(tarea)
-        guardar_tareas(tareas)  
-        print("Tarea agregada con éxito.")
+        guardar_tareas(tareas)
+        actualizar_lista_tareas()
+        entry_tarea.delete(0, tk.END)
     else:
-        print("Tarea vacía, no se puede agregar.")
+        messagebox.showwarning("Advertencia", "La tarea no puede estar vacía.")
 
+# Función para ver tareas
 def ver_tareas():
     if not tareas:
-        print("No hay tareas aún.")
+        messagebox.showinfo("No hay tareas", "No hay tareas guardadas aún.")
     else:
-        print("Tareas:")
-        for i, tarea in enumerate(tareas, start=1):
-            print(f"{i}. {tarea}")
+        tareas_str = "\n".join([f"{i+1}. {tarea}" for i, tarea in enumerate(tareas)])
+        messagebox.showinfo("Tareas", tareas_str)
 
-def eliminar_tareas():
-    if not tareas:
-        print("No hay tareas aún.")
-    else:
-        ver_tareas()
-        try:
-            indice = int(input("Ingresa el número de la tarea a eliminar: ")) - 1
-            if 0 <= indice < len(tareas):
-                tarea_eliminada = tareas.pop(indice)
-                guardar_tareas(tareas)  
-                print(f"Tarea '{tarea_eliminada}' eliminada con éxito.")
-            else:
-                print("Número de tarea inválido.")
-        except ValueError:
-            print("Por favor ingresa un número válido.")
-
-def main():
-    while True:
-        mostrar_menu()
-        opcion = input("Selecciona una opción: ")
-        
-        if opcion == "1":
-            agregar_tarea()
-        elif opcion == "2":
-            ver_tareas()
-        elif opcion == "3":
-            eliminar_tareas()
-        elif opcion == "4":
-            print("Saliendo del gestor de tareas...")
-            break
+# Función para eliminar tarea
+def eliminar_tarea():
+    try:
+        indice = int(entry_tarea.get()) - 1  # Convertir el índice a entero
+        if 0 <= indice < len(tareas):
+            tarea_eliminada = tareas.pop(indice)
+            guardar_tareas(tareas)
+            actualizar_lista_tareas()
+            entry_tarea.delete(0, tk.END)
+            messagebox.showinfo("Tarea eliminada", f"Tarea '{tarea_eliminada}' eliminada.")
         else:
-            print("Opción inválida, intenta de nuevo.")
+            messagebox.showwarning("Error", "Índice inválido.")
+    except ValueError:
+        messagebox.showwarning("Error", "Por favor ingresa un número válido.")
 
-if __name__ == "__main__":
-    main()
+# Función para actualizar la lista de tareas en la interfaz
+def actualizar_lista_tareas():
+    lista_tareas.delete(0, tk.END)  # Limpiar la lista
+    for tarea in tareas:
+        lista_tareas.insert(tk.END, tarea)
+
+# Crear la ventana principal
+root = tk.Tk()
+root.title("Gestor de Tareas")
+
+# Cargar las tareas al iniciar
+tareas = cargar_tareas()
+
+# Frame para contener los widgets
+frame = tk.Frame(root)
+frame.pack(padx=10, pady=10)
+
+# Entrada de texto para las tareas
+entry_tarea = tk.Entry(frame, width=40)
+entry_tarea.grid(row=0, column=0, padx=5, pady=5)
+
+# Botón para agregar tarea
+boton_agregar = tk.Button(frame, text="Agregar tarea", command=agregar_tarea)
+boton_agregar.grid(row=0, column=1, padx=5, pady=5)
+
+# Lista de tareas
+lista_tareas = tk.Listbox(root, width=50, height=10)
+lista_tareas.pack(padx=10, pady=10)
+
+# Botón para ver tareas
+boton_ver = tk.Button(root, text="Ver tareas", command=ver_tareas)
+boton_ver.pack(pady=5)
+
+# Botón para eliminar tarea
+boton_eliminar = tk.Button(root, text="Eliminar tarea", command=eliminar_tarea)
+boton_eliminar.pack(pady=5)
+
+# Botón para salir
+boton_salir = tk.Button(root, text="Salir", command=root.quit)
+boton_salir.pack(pady=5)
+
+# Actualizar la lista de tareas al iniciar
+actualizar_lista_tareas()
+
+# Ejecutar la interfaz gráfica
+root.mainloop()
