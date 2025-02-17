@@ -4,13 +4,19 @@ def mostrar_menu():
     print("2. Ver tareas")
     print("3. Salir")
 
+tareas = []
+def agregar_tarea():
+    tarea = input("Ingresa la tarea: ")
+    tareas.append(tarea)
+    print("Tarea agregada con éxito.")
+
 def main():
     while True:
         mostrar_menu()
         opcion = input("Selecciona una opción: ")
         
         if opcion == "1":
-            print("Función para agregar tarea aún no implementada.")
+            agregar_tarea()
         elif opcion == "2":
             print("Función para ver tareas aún no implementada.")
         elif opcion == "3":
