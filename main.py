@@ -10,6 +10,14 @@ def agregar_tarea():
     tareas.append(tarea)
     print("Tarea agregada con éxito.")
 
+def ver_tareas():
+    if not tareas:
+        print("No hay tareas aún.")
+    else:
+        print("Tareas:")
+        for i, tarea in enumerate(tareas, start=1):
+            print(f"{i}. {tarea}")
+
 def main():
     while True:
         mostrar_menu()
@@ -18,7 +26,7 @@ def main():
         if opcion == "1":
             agregar_tarea()
         elif opcion == "2":
-            print("Función para ver tareas aún no implementada.")
+            ver_tareas()
         elif opcion == "3":
             print("Saliendo del gestor de tareas...")
             break
