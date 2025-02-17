@@ -7,10 +7,12 @@ def mostrar_menu():
 
 tareas = []
 def agregar_tarea():
-    tarea = input("Ingresa la tarea: ")
-    tareas.append(tarea)
-    print("Tarea agregada con éxito.")
-
+    tarea = input("Ingresa la tarea: ").strip()
+    if tarea:
+        tareas.append(tarea)
+        print("Tarea agregada con éxito.")
+    else: 
+        print("Tarea vacia, no se puede agregar")
 def ver_tareas():
     if not tareas:
         print("No hay tareas aún.")
